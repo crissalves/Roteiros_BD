@@ -91,7 +91,7 @@ DROP TABLE automovel;
 --Ponto 7 Reescrevi todos os comandos de criação para incluindo os dados NOT NULL, chaves primárias e estrangeiras.
 
 --Ponto 8 Adicionei todas as tabelas já com as intruções corretas.
---Ponto 8 Usei alter table para usar mais chaves Estrangeiras.
+--Ponto 8 Usei alter table para usar mais chaves Estrangeiras relacionadas as placas dos veiculos e do cpf do segurado.
 
 ALTER TABLE Seguro ADD CONSTRAINT Segurado FOREIGN KEY (segurado) REFERENCES Segurado (cpf);
 ALTER TABLE Seguro ADD CONSTRAINT Placa_Veiculo FOREIGN KEY (automovel) REFERENCES Automovel (placa);
