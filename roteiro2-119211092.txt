@@ -14,7 +14,7 @@ CREATE TABLE tarefas(
     status char(1)
 );
 
---Comandos 1 2 e 3 executados com sucesso.
+--Comandos 1.
 
 INSERT INTO tarefas VALUES (2147483646, 'limpar chão do corredor central', '98765432111', 0, 'F');
 
@@ -22,7 +22,7 @@ INSERT INTO tarefas VALUES (2147483647, 'limpar janelas da sala 203', '987654321
 
 INSERT INTO tarefas VALUES (null, null, null, null, null);
 
---Comandos 4 e 5 não foram autorizados.
+-- Os abaixo não foram executados de accordo com a atividade.
 
 INSERT INTO tarefas VALUES (2147483644, 'limpar chão do corredor superior', '987654323211', 0, 'F');
 
@@ -30,6 +30,22 @@ INSERT INTO tarefas VALUES (2147483643, 'limpar chão do corredor superior', '98
 
 Questão 2:
 
--- Comando 1 executado com sucesso.
+-- Comandos 2.
 
 INSERT INTO tarefas VALUES (2147483648, 'limpar portas do térreo', '32323232955', 4, 'A');
+
+
+Questão 3:
+
+-- Comandos 3. 
+-- Não passaram como dito na especificação
+
+-- ALTER TABLE tarefas ALTER COLUMN prioridade smallint;
+
+INSERT INTO tarefas VALUES (2147483649, 'limpar portas da entrada principal','32322525199', 32768, 'A');
+
+INSERT INTO tarefas VALUES (2147483650, 'limpar janelas da entrada principal', '32333233288', 32769, 'A');
+
+-- Comandos 4.
+-- Os próximos deveria passar, mas falham pois estou char(1) em prioridade.
+-- Fiz alterações olhar no WPP para corrigir

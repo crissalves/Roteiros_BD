@@ -1,0 +1,94 @@
+Roteiro 2 - 119211092. Cristian Alves da Silva
+
+1 - Inserção de dados (INSERT):
+
+--Primeira Inserção ocorreu tudo bem e retornou (INSERT 01).
+
+INSERT INTO automovel VALUES(
+    'ABC-1234',
+    '2014',
+    'Onix',
+    '12345678900'
+);
+
+--Segunda Inserção ocorreu tudo bem e teve o mesmo retorno da anterior (INSERT 0 1).
+
+INSERT INTO segurado(
+    nome,
+    cpf,
+    veiculos
+)VALUES(
+    'Cristian Alves',
+    '12345678900',
+    'ABC-1234'
+);
+
+--Terceira Inserção 
+
+INSERT INTO automovel(
+    placa,
+    ano,
+    modelo,
+    titular
+)VALUES(
+    'BCA-1234',
+    '2022',
+    'Creta',
+    '98765432100'
+),(
+    'CBA-1234',
+    '2020',
+    'Fusca',
+    '12345678911'
+);
+
+--Criei carros para poder associar aos segurados. retornou INSERT(0 2).
+
+INSERT INTO segurado(
+    nome,
+    cpf,
+    telefone,
+    veiculos
+)VALUES(
+    'Campelo',
+    '98765432100',
+    '83911223344',
+    'BCA-1234'
+), (
+    'Vini',
+    '12345678911',
+    '83912345678',
+    'CBA-1234'
+);
+
+-- Inseri os segurados com seus respectivos titulares. retornou INSERT(0 2).
+
+
+2 - Consulta aos dados do BD:
+
+-- Primeira Consulta retornou os automoveis criados anteriormente.
+
+SELECT placa, titular FROM automovel;
+
+--Segunda Consulta retornou os segurados criados anteriormente, até mesmo o que não tem o telefone.
+
+SELECT nome, cpf, telefone, veiculos FROM segurado;
+
+
+3 - Remoção de daos do BD:
+
+--Primeira Remoção. Retornou DELETE 3, apagando assim meus 3 segurados.
+
+DELETE FROM segurado;
+
+--Segunda remoção. Retornou DELETE 1, apagando apenas o carro do ano 2014.
+
+DELETE FROM automovel WHERE ano = 2014;
+
+
+4 - Atualizando dados do BD
+
+--Primeira atualização.
+
+UPDATE automovel SET 
+
