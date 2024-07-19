@@ -1,0 +1,35 @@
+Roteiro 2. 119211092. Cristian Alves da Silva.
+
+-- Criando o BD e Trabalhando com restições de Integridade.
+
+Questão 1:
+
+--Criação da tabela inicial.
+
+CREATE TABLE tarefas(
+    id varchar(10),
+    descrição text,
+    func_resp_cpf varchar(11),
+    prioridade varchar(1),
+    status char(1)
+);
+
+--Comandos 1 2 e 3 executados com sucesso.
+
+INSERT INTO tarefas VALUES (2147483646, 'limpar chão do corredor central', '98765432111', 0, 'F');
+
+INSERT INTO tarefas VALUES (2147483647, 'limpar janelas da sala 203', '98765432122', 1, 'F');
+
+INSERT INTO tarefas VALUES (null, null, null, null, null);
+
+--Comandos 4 e 5 não foram autorizados.
+
+INSERT INTO tarefas VALUES (2147483644, 'limpar chão do corredor superior', '987654323211', 0, 'F');
+
+INSERT INTO tarefas VALUES (2147483643, 'limpar chão do corredor superior', '98765432321', 0, 'FF');
+
+Questão 2:
+
+-- Comando 1 executado com sucesso.
+
+INSERT INTO tarefas VALUES (2147483648, 'limpar portas do térreo', '32323232955', 4, 'A');
