@@ -40,12 +40,129 @@ Questão 3:
 -- Comandos 3. 
 -- Não passaram como dito na especificação
 
--- ALTER TABLE tarefas ALTER COLUMN prioridade smallint;
-
 INSERT INTO tarefas VALUES (2147483649, 'limpar portas da entrada principal','32322525199', 32768, 'A');
 
 INSERT INTO tarefas VALUES (2147483650, 'limpar janelas da entrada principal', '32333233288', 32769, 'A');
 
 -- Comandos 4.
 -- Os próximos deveria passar, mas falham pois estou char(1) em prioridade.
--- Fiz alterações olhar no WPP para corrigir
+
+INSERT INTO tarefas VALUES (2147483651, 'limpar portas do 1o andar','32323232911', 32767, 'A');
+INSERT INTO tarefas VALUES (2147483652, 'limpar portas do 2o andar', '32323232911', 32766, 'A');
+
+-- Alterei a tabela usando o comando abaixo e agora ta dando certo.
+-- ALTER TABLE tarefas ALTER COLUMN prioridade TYPE smallint USING(propriedade::smalltint);
+
+Questão 4:
+
+-- Usei o comando abaixo para impedir valores nulos.
+
+ALTER TABLE tarefas ALTER COLUMN <id> SET NOT NULL; (<Nomes das colunas.>)
+
+Questão 5:
+
+-- Usei o comando abaixo para impedir a repetição de id, transformando em uma primary key.
+ 
+ ALTER TABLE tarefas add CONSTRAIND idUnique PRIMARY KEY(id);
+
+-- Comandos 5.
+
+INSERT INTO tarefas VALUES (2147483653, 'limpar portas do 1o andar','32323232911', 2, 'A');
+
+-- Falha no segundo como deveria ser.
+
+INSERT INTO tarefas VALUES (2147483653, 'aparar a grama da área frontal', '32323232911', 3, 'A');
+
+
+Questão 6:
+
+
+6. A
+-- Alterar conluna do cpf para receber exatamente 11.
+
+ALTER TABLE tarefas ADD CONSTRAINT cpf_tamanho CHECK (LENGTH(func_resp_cpf) = 11);
+
+6. B
+
+-- Primeiro alterei os valores que já estavam nas tabelas com o comando:
+
+UPDATE tarefas SET status = 'C' where status = 'F'; (repeti para  A também).
+
+-- Agora irei criar um check para restrição de integridade.
+
+ALTER TABLE tarefas ADD CONSTRAINT status_tarefa_valido CHECK (status IN ('C', 'P', 'E'));
+
+Questão 7:
+
+-- Alter os valores que estavam acima de 5 para 5.
+
+UPDATE tarefas SET prioridade = 5 WHERE prioridade > 5;
+
+-- Em sequida adicionei a CONSTRAINT responsavel por permitir esses valores.
+
+ALTER TABLE tarefas ADD CONSTRAINT prioridade_valida CHECK (prioridade BETWEEN 0 AND 5);
+
+Questão 8:
+
+-- Criação da tabela funcionario:
+
+CREATE TABLE funcionario (
+    cpf varchar(11) PRIMARY KEY,
+    data_nasc date NOT NULL,
+    nome text NOT NULL,
+    funcao varchar(12) NOT NULL CHECK (funcao IN ('LIMPEZA', 'SUP_LIMPEZA')),
+    nivel varchar(1) NOT NULL CHECK (nivel IN ('J', 'P', 'S')),
+    superior_cpf varchar(11),
+);
+
+ALTER TABLE funcionario ADD CONSTRAINT Limpeza CHECK (funcao != 'LIMPEZA' OR superior_cpf IS NOT NULL);
+
+-- Vale o comentário que eu estava enterpretando errado essa parte, eu deveria refenreciar o cpf e o cpf do superior e não para outra tabela.
+
+ALTER TABLE funcionario ADD CONSTRAINT fk_superior_cpf FOREIGN KEY (superior_cpf) REFERENCES funcionario(cpf);
+
+-- Comandos 6
+
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678911', '1980-05-07', 'Pedro da Silva', 'SUP_LIMPEZA', 'S', null);
+INSERT INTO funcionario(cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678912', '1980-03-08', 'Jose da Silva', 'LIMPEZA', 'J', '12345678911');
+-- Funcionou.
+
+INSERT INTO funcionario(cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES ('12345678913', '1980-04-09', 'joao da Silva', 'LIMPEZA', 'J', null);
+-- Falhou.
+
+Questão 9:
+
+-- 10 casos que passam.
+
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES
+('12345678901', '1985-01-15', 'João Silva', 'LIMPEZA', 'J', '12345678902'), -- superior_cpf existente e válido
+('12345678902', '1982-06-20', 'Maria Oliveira', 'SUP_LIMPEZA', 'P', NULL),   -- superior_cpf pode ser nulo
+('12345678903', '1990-11-30', 'Carlos Souza', 'LIMPEZA', 'S', '12345678902'), -- superior_cpf existente e válido
+('12345678904', '1988-05-25', 'Ana Costa', 'SUP_LIMPEZA', 'J', NULL),        -- superior_cpf pode ser nulo
+('12345678905', '1975-03-14', 'Pedro Santos', 'LIMPEZA', 'P', '12345678903'), -- superior_cpf existente e válido
+('12345678906', '1992-08-12', 'Claudia Almeida', 'LIMPEZA', 'S', '12345678904'), -- superior_cpf existente e válido
+('12345678907', '1986-09-01', 'Fernanda Lima', 'SUP_LIMPEZA', 'J', NULL),   -- superior_cpf pode ser nulo
+('12345678908', '1989-12-11', 'Rafael Pereira', 'LIMPEZA', 'P', '12345678905'), -- superior_cpf existente e válido
+('12345678909', '1993-07-20', 'Juliana Rocha', 'LIMPEZA', 'S', '12345678906'), -- superior_cpf existente e válido
+('12345678910', '1984-04-16', 'Lucas Martins', 'SUP_LIMPEZA', 'P', NULL);    -- superior_cpf pode ser nulo   
+
+
+-- 10 casos que falham.
+-- Tentando inserir dados que violam as constraints
+INSERT INTO funcionario (cpf, data_nasc, nome, funcao, nivel, superior_cpf) VALUES
+('12345678911', '1991-03-03', 'Gustavo Ribeiro', 'LIMPEZA', 'J', NULL),     -- Falha: falta superior_cpf
+('12345678912', '1987-10-30', 'Beatriz Lima', 'INVALID_FUNC', 'P', '12345678901'), -- Falha: função inválida
+('12345678913', '1994-02-19', 'Marcos Silva', 'LIMPEZA', 'X', '12345678902'),   -- Falha: nível inválido
+('12345678914', '1983-07-15', 'Roberta Santos', 'LIMPEZA', 'S', '12345678999'),  -- Falha: superior_cpf não existe
+('12345678915', NULL, 'Eduardo Campos', 'SUP_LIMPEZA', 'J', NULL),    -- Falha: data_nasc não pode ser nula
+('12345678916', '1985-01-15', 'Letícia Oliveira', 'LIMPEZA', NULL, '12345678902'),  -- Falha: nível não pode ser nulo
+('12345678917', '1995-01-01', 'Henrique Silva', NULL, 'J', '12345678903'), -- Falha: função não pode ser nula
+('12345678918', '1990-12-25', 'Gabriel Andrade', 'LIMPEZA', 'S', NULL),  -- Falha: função 'LIMPEZA' exige superior_cpf
+('12345678919', '1990-12-25', 'Isabela Andrade', 'LIMPEZA', 'S', '12345678902'),  -- Falha: cpf duplicado
+('12345678920', '1990-12-25', 'Marcelo Andrade', 'SUP_LIMPEZA', 'X', NULL);  -- Falha: nível inválido
+
+Questão 10:
+
+-- A partir daqui não consegui pensar nas CONSTRAINT's, como só tem hoje para entrega, entregarei o que posso.
+
+
