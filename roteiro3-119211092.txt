@@ -1,0 +1,74 @@
+-- Roteiro 3:
+
+--Criação de Tabelas:
+
+--Simplificar os tipos relacionados . EX(filial = 'F')
+--Gerente é um funcionario(id_funcionario).
+
+CREATE TABLE farmacia(
+    id_farmacia INTEGER PRIMARY KEY,
+    bairro TEXT,
+    cidade TEXT,
+    estado VARCHAR(2),
+    tipo VARCHAR(10),
+    gerente VARCHAR(11),
+
+    UNIQUE(id_farmacia, gerente)
+);
+
+ALTER TABLE farmacia ADD CONSTRAINT check_tipo  CHECK (tipo IN('filial' , 'sede));
+ALTER TABLE farmacia ADD CONSTTRAINT defini_gerente FOREIGN KEY(gerente) REFERENCES funcionarios(cpf_funcioario);
+
+--Lotacao é o id_farmacia.
+
+CREATE TABLE funcionarios(
+    cpf_funcionario VARCHAR (11) PRIMARY KEY,
+    cargo VARCHAR(20) NOT NULL,
+    lotacao INTEGER,
+
+    UNIQUE(lotacao)
+);
+
+ALTER TABLE funcionarios ADD CONSTRAINT check_cargo CHECK (cargo IN('farmaceutico','vendedor', 'entregadir, 'caixa', 'administrador'));
+ALTER TABLE funcionarios ADD CONSTRAINT define_farmacia FOREIGN KEY (lotacao) REFERENCES farmacia(id_farmacia);
+
+CREATE TABLE medicamentos(
+
+);
+
+CREATE TABLE vendas(
+
+);
+
+CREATE TABLE entregas(
+
+);
+
+CREATE TABLE clientes(
+    cpf_cliente VARCHAR(11) PRIMARY KEY,
+    idade VARCHAR(2),
+
+);
+
+ALTER TABLE clientes ADD CONSTRAINT check_idade CHECK(idade >= 18);
+
+--Irei criar um tabela de endereções vinculados a um cliente.
+--Mudar nomeclatura, por exemplo, endereco para cliente_endereco.
+
+CREATE TABLE cliente_endereco(
+    cpf_cliente VARCHAR(11) PRIMARY KEY,
+    tipo_endereco TEXT,
+    endereco TEXT
+);
+ALTER TABLE cliente_endereco ADD CONSTRAINT check_tipo_endereco CHECK(tipo_endereco IN('residencia', 'trabalho', 'outro'));
+
+
+
+
+--Questões :
+
+--1. OK
+--2. OK
+--3. OK
+--4. OK
+--5. OK
