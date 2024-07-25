@@ -1,74 +1,137 @@
--- Roteiro 3:
+--Roteiro 3:
 
---Criação de Tabelas:
-
---Simplificar os tipos relacionados . EX(filial = 'F')
---Gerente é um funcionario(id_funcionario).
+--Questões :
+--1. Ok
 
 CREATE TABLE farmacia(
     id_farmacia INTEGER PRIMARY KEY,
     bairro TEXT,
     cidade TEXT,
     estado VARCHAR(2),
-    tipo VARCHAR(10),
+    tipo VARCHAR(1),
     gerente VARCHAR(11),
 
     UNIQUE(id_farmacia, gerente)
 );
 
-ALTER TABLE farmacia ADD CONSTRAINT check_tipo  CHECK (tipo IN('filial' , 'sede));
-ALTER TABLE farmacia ADD CONSTTRAINT defini_gerente FOREIGN KEY(gerente) REFERENCES funcionarios(cpf_funcioario);
+--Tipo de farmacia pode ser: F = Filial e S = Sede.
+ALTER TABLE farmacia ADD CONSTRAINT check_tipo  CHECK (tipo IN('F' , 'S'));
 
---Lotacao é o id_farmacia.
+
+--2. Ok
 
 CREATE TABLE funcionarios(
     cpf_funcionario VARCHAR (11) PRIMARY KEY,
-    cargo VARCHAR(20) NOT NULL,
+    cargo VARCHAR(1) NOT NULL,
     lotacao INTEGER,
 
     UNIQUE(lotacao)
 );
 
-ALTER TABLE funcionarios ADD CONSTRAINT check_cargo CHECK (cargo IN('farmaceutico','vendedor', 'entregadir, 'caixa', 'administrador'));
-ALTER TABLE funcionarios ADD CONSTRAINT define_farmacia FOREIGN KEY (lotacao) REFERENCES farmacia(id_farmacia);
+--Cargo pode ser: F = farmaceutico, V = vendedor, E = entregador, C = caixa e A = administrador.
+ALTER TABLE funcionarios ADD CONSTRAINT check_cargo CHECK (cargo IN('F','V', 'E', 'C', 'A'));
 
-CREATE TABLE medicamentos(
 
-);
+--3. Ok
 
-CREATE TABLE vendas(
+--Funcionario só pode está lotado a uma unica farmacia.
+ALTER TABLE funcionarios ADD CONSTRAINT fu_lotacao FOREIGN KEY (lotacao) REFERENCES farmacia(id_farmacia);
+ALTER TABLE funcionarios ADD CONSTRAINT unico_lotacao UNIQUE(lotacao);
 
-);
 
-CREATE TABLE entregas(
+--4. Ok
 
-);
+--Cada farmácia tem apenas um gerente que é um funcionario.
+ALTER TABLE funcionarios ADD CONSTRAINT fk_gerente FOREIGN KEY (gerente) REFERENCES funcionarios(cpf_funcionario);
+ALTER TABLE farmacia ADD CONSTRAINT unico_gerente UNIQUE(gerente);
 
-CREATE TABLE clientes(
+
+--5. Ok
+
+ALTER TABLE funcionarios ALTER COLUMN lotacao DROP NOT NULL;
+
+
+--6. Ok
+
+CREATE TABLE clientes (
     cpf_cliente VARCHAR(11) PRIMARY KEY,
-    idade VARCHAR(2),
-
+    idade INTEGER, 
 );
 
+--Adiantei o ponto 13.
 ALTER TABLE clientes ADD CONSTRAINT check_idade CHECK(idade >= 18);
 
 --Irei criar um tabela de endereções vinculados a um cliente.
---Mudar nomeclatura, por exemplo, endereco para cliente_endereco.
 
-CREATE TABLE cliente_endereco(
-    cpf_cliente VARCHAR(11) PRIMARY KEY,
+CREATE TABLE cliente_endereco (
+    id_endereco SERIAL PRIMARY KEY, -- Identificador único para cada endereço
+    cpf_cliente VARCHAR(11) NOT NULL,
     tipo_endereco TEXT,
     endereco TEXT
 );
-ALTER TABLE cliente_endereco ADD CONSTRAINT check_tipo_endereco CHECK(tipo_endereco IN('residencia', 'trabalho', 'outro'));
+
+--Fiz uma alteração para evitar o uso de SERIAL já que temos restrições
+ALTER TABLE cliente_endereco ALTER COLUMN id_endereco TYPE INTEGER;
+ALTER TABLE cliente_endereco  ADD CONSTRAINT fk_cliente FOREIGN KEY (cpf_cliente) REFERENCES clientes(cpf_cliente);
 
 
+--7. Ok
+
+-- Alterar o tipo da coluna tipo_endereco para VARCHAR(1)
+ALTER TABLE cliente_endereco ALTER COLUMN tipo_endereco TYPE VARHAR(1);
+
+--Simplifiquei os nomes do tipos de endereço.
+ALTER TABLE cliente_endereco ADD CONSTRAINT check_tipo_endereco CHECK(tipo_endereco IN('T', 'T', 'O'));
 
 
---Questões :
+--8. Ok
 
---1. OK
---2. OK
---3. OK
---4. OK
---5. OK
+CREATE TABLE medicamentos(
+    nome VARCHAR(20) NOT NULL PRIMARY KEY,
+    necessita_receita BOOLEAN NOT NULL,
+    preco DECIMAL(10,2) NOT NULL
+);
+
+
+--9. Ok
+
+CREATE TABLE entregas (
+    id_entrega INTEGER PRIMARY KEY, 
+    id_endereco INTEGER NOT NULL, 
+    data_entrega DATE NOT NULL, 
+    status VARCHAR(20) NOT NULL
+);
+
+ALTER TABLE entregas ADD CONSTRAINT fk_endereco FOREIGN KEY (id_endereco) REFERENCES cliente_endereco(id_endereco);
+
+-- Status pode ser: E= Entregue, C = Cancelada, A = A caminho.
+ALTER TABLE entregas ALTER COLUMN status TYPE VARCHAR(1);
+ALTER TABLE entregas ADD CONSTRAINT check_status CHECK(status IN('E','C','A'));
+
+
+--10. Ok
+
+CREATE TABLE vendas (
+    id_venda INTEGER PRIMARY KEY,
+    cpf_cliente VARCHAR(11),  -- Pode ser NULL para clientes não cadastrados
+    nome_cliente VARCHAR(100), -- Nome do cliente para não cadastrados
+    data_venda DATE NOT NULL,
+    valor NUMERIC(10, 2) NOT NULL
+);
+
+-- Caso seja um cliente cadastrado, irá gerar uma relação com cliente.
+ALTER TABLE vendas ADD CONSTRAINT fk_cliente_venda FOREIGN KEY (cpf_cliente) REFERENCES clientes(cpf_cliente);
+
+-- Adicionei a constraint abaixo para que caso o cliente não passe o CPF seja necessário o nome e vice versa.
+ALTER TABLE vendas ADD CONSTRAINT check_cliente CHECK (
+    (cpf_cliente IS NOT NULL AND nome_cliente IS NULL) OR 
+    (cpf_cliente IS NULL AND nome_cliente IS NOT NULL)
+);
+
+--11. 
+
+--Adicionei uma ligação com o funcionario na tabela vendas.
+ALTER TABLE vendas ADD COLUMN cpf_funcionario VARCHAR (11) NOT NULL;
+
+--Adicionei um CONSTRAINT para relacionar Cpf do funcionario na venda.
+ALTER TABLE vendas ADD CONSTRAINT fk_cpf_funcionario FOREIGN KEY(cpf_funcionario) REFERENCES funcionarios(cpf_funcionario);
