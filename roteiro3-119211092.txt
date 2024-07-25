@@ -128,10 +128,53 @@ ALTER TABLE vendas ADD CONSTRAINT check_cliente CHECK (
     (cpf_cliente IS NULL AND nome_cliente IS NOT NULL)
 );
 
---11. 
+--11. Imcompleto
+
 
 --Adicionei uma ligação com o funcionario na tabela vendas.
 ALTER TABLE vendas ADD COLUMN cpf_funcionario VARCHAR (11) NOT NULL;
 
 --Adicionei um CONSTRAINT para relacionar Cpf do funcionario na venda.
 ALTER TABLE vendas ADD CONSTRAINT fk_cpf_funcionario FOREIGN KEY(cpf_funcionario) REFERENCES funcionarios(cpf_funcionario);
+
+--12. Imcompleto
+
+
+--13. Ok
+
+--Criei uma nova coluna com a idade no formato DATE, após isso criei a CONSTRAINT para checar se tinha mais de 18 anos.
+ALTER TABLE clientes ADD CONSTRAINT check_idade CHECK (AGE(CURRENT_DATE, data_nascimento) >= '18 years');
+
+
+--14. Ok
+
+--Bairro agora é unico.
+ALTER TABLE farmacia ADD CONSTRAINT bairro_unico UNIQUE(bairro);
+
+
+--15. Ok
+
+--Criei uma coluna auxiliar para caso for uma sede:
+ALTER TABLE farmacia ADD COLUMN is_sede BOOLEAN;
+
+--Após isso criei um UPDATE para atualizar o is_sede no caso de o TIPO ser 'S';
+UPDATE farmacia SET is_sede=(tipo='S');
+
+--Tentei Criar uma CONSTRAINT que ira verificar se a farmacia é uma sede, usando Exclude para ela ser a unica.
+ALTER TABLE farmacia ADD CONSTRAINT sede_unica EXCLUDE USING GIST(is_sede WITH =) WHERE (is_sede);
+
+
+--16. Imcompleto
+
+ALTER TABLE funcionar
+
+--17. Ok
+
+--Criei uma relação do nome do medicamento e o nome dele em venda, adicionei ambos como UNIQUE.
+ALTER TABLE vendas ADD COLUMN nome_medicamento VARCHAR(20) NOT NULL;
+ALTER TABLE vendas ADD CONSTRAINT fk_nome_medicamento FOREIGN KEY (nome_medicamento) REFERENCES medicamentos(nome);
+ALTER TABLE medicamentos ADD CONSTRAINT unique_nome UNIQUE (nome);
+ALTER TABLE clientes ADD CONSTRAINT unique_cpf UNIQUE (cpf_cliente);
+
+18. 
+
