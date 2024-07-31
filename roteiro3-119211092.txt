@@ -137,7 +137,11 @@ ALTER TABLE vendas ADD COLUMN cpf_funcionario VARCHAR (11) NOT NULL;
 --Adicionei um CONSTRAINT para relacionar Cpf do funcionario na venda.
 ALTER TABLE vendas ADD CONSTRAINT fk_cpf_funcionario FOREIGN KEY(cpf_funcionario) REFERENCES funcionarios(cpf_funcionario);
 
---12. Imcompleto
+--12. ok
+
+--Usei on delete restrict não se pode mas é isso ai, outra boa solução seria usar outro atributo para controlar esses delete'S
+
+ALTER TABLE vendas ADD CONSTRAINT fk_nome_medicamento FOREIGN KEY (nome_medicamento) REFERENCES medicamentos(nome) ON DELETE RESTRICT;
 
 
 --13. Ok
@@ -164,9 +168,11 @@ UPDATE farmacia SET is_sede=(tipo='S');
 ALTER TABLE farmacia ADD CONSTRAINT sede_unica EXCLUDE USING GIST(is_sede WITH =) WHERE (is_sede);
 
 
---16. Imcompleto
+--16. ok
 
-ALTER TABLE funcionar
+--Criei uma coluna gerente_tipo em farmacia, para verificar se ele será um farmaceutico ou um administrador.
+ALTER TABLE farmacia ADD COLUMN gerente_tipo CHAR(1);
+ALTER TABLE farmacia ADD CONSTRAINT check_gerente_tipo_valido CHECK (gerente_tipo IN ('A', 'F'));
 
 --17. Ok
 
@@ -176,5 +182,26 @@ ALTER TABLE vendas ADD CONSTRAINT fk_nome_medicamento FOREIGN KEY (nome_medicame
 ALTER TABLE medicamentos ADD CONSTRAINT unique_nome UNIQUE (nome);
 ALTER TABLE clientes ADD CONSTRAINT unique_cpf UNIQUE (cpf_cliente);
 
-18. 
+18. Ok
 
+--Adicionei tipo de funcionarioa para verificar se ele faz parte de vendas.
+ALTER TABLE vendas ADD COLUMN tipo_funcionario VARCHAR(1);
+ALTER TABLE vendas ADD CONSTRAINT check_tipo_funcionario CHECK (tipo_funcionario = 'V');
+
+19. Ok (Essa eu pesquisei por fora como fazer tenho que checar para ver se ta tudo nos conformes com algum monitor ou professor.)
+
+-- Criei o tipo ENUM para cada estado do nordeste.
+CREATE TYPE estado_nordeste AS ENUM (
+    'BA',  -- Bahia
+    'CE',  -- Ceará
+    'MA',  -- Maranhão
+    'PB',  -- Paraíba
+    'PE',  -- Pernambuco
+    'PI',  -- Piauí
+    'RN',  -- Rio Grande do Norte
+    'SE',  -- Sergipe
+    'AL'   -- Alagoas
+);
+
+-- Alterei a coluna estado à tabela farmacia com o tipo enumerado
+ALTER TABLE farmacia ALTER COLUMN estado TYPE estado_nordeste USING estado::text::estado_nordeste;
