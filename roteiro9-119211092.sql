@@ -1,4 +1,4 @@
---Roteiro 9 comentado:
+-- Roteiro 9 comentado:
 
 -- Questão 1:
 
@@ -118,7 +118,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
---Lembrar do uso das exceções para pegar casos que não se encaixem na especificação do roteiro.
+-- Lembrar do uso das exceções para pegar casos que não se encaixem na especificação do roteiro.
 
 -- Criando a Trigger:
 
@@ -129,20 +129,20 @@ FOR EACH ROW EXECUTE FUNCTION check_mgr();
 
 -- Testando a Trigger:
 
---Deletando ela para fazer as inserções:
+-- Deletando ela para fazer as inserções:
 DROP TRIGGER IF EXISTS check_mgr_trigger ON department;
 
---Inserções
+-- Inserções
 INSERT INTO department VALUES ('Test', 2, '999999999', NOW());
 INSERT INTO employee VALUES ('Joao', 'A', 'Silva', '999999999', '10-OCT-1950', '123 Peachtree, Atlanta, GA', 'M', 85000, NULL, 2);
 INSERT INTO employee VALUES ('Jose', 'A', 'Santos', '999999998', '10-OCT-1950', '123 Peachtree, Atlanta, GA', 'M', 85000, '999999999', 2);
 
---Criando novamente a Trigger:
+-- Criando novamente a Trigger:
 CREATE TRIGGER check_mgr_trigger
 BEFORE INSERT OR UPDATE ON department
 FOR EACH ROW EXECUTE FUNCTION check_mgr();
 
---Testando Updates e Deletes:
+-- Testando Updates e Deletes:
 
 UPDATE department SET mgrssn = '999999999' WHERE dnumber = 2;
 UPDATE department SET mgrssn = NULL WHERE dnumber = 2; -- Falhou como descrito.
@@ -159,20 +159,19 @@ DELETE FROM department WHERE dnumber = 2;
 
 -- Ao final de tudo, os updates e deletes funcionaram como estão descritos no roteiro, garantindo que a função e os trigger's funcionario de forma correta :D.
 
---Testes adicionais (Irei comentar apenas as falhas.):
+-- Testes adicionais (Irei comentar apenas as falhas.):
 
---Inserir Departamente sem existir gerente.
+-- Inserir Departamente sem existir gerente.
 INSERT INTO department VALUES ('Invalid Dept', 3, '000000001');
 
 INSERT INTO employee VALUES ('Alice', 'B', 'Smith', '111111110', '10-OCT-1970', '456 Elm St, Seattle, WA', 'F', 75000, NULL, 1);
 
---Inserir um departamento com o gerente sem empregados.
+-- Inserir um departamento com o gerente sem empregados.
 INSERT INTO department VALUES ('Dept with Invalid Manager', 4, '111111110');
 
---Inserir um funcionário que é SENIOR e possui empregados.
+-- Inserir um funcionário que é SENIOR e possui empregados.
 INSERT INTO employee VALUES ('Bob', 'C', 'Johnson', '222222220', '10-OCT-1950', '789 Maple St, Portland, OR', 'M', 85000, NULL, 2);
 INSERT INTO employee VALUES ('Charlie', 'C', 'Brown', '222222221', '10-OCT-1980', '789 Maple St, Portland, OR', 'M', 65000, '222222220', 2);
 
---Essa deveria passar mas da erro, deveria inserir um departamento com esse gerente.
+-- Essa deveria passar mas da erro, deveria inserir um departamento com esse gerente.
 INSERT INTO department VALUES ('Valid Dept', 5, '222222220');
-
